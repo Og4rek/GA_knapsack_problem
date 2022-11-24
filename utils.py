@@ -19,11 +19,5 @@ class dataReader:
 
         return weights, profits, capacity, optimal_selection
 
-@dataclass
-class Item:
-    id: int
-    weight: int
-    profit: int 
-
 def arreq_in_list(myarr, list_arrays):
     return next((True for elem in list_arrays if array_equal(elem, myarr)), False)
