@@ -13,9 +13,7 @@ class GAKnapsackSolver:
         self.fitness = np.empty(len(self.population))
         for i,specimen in enumerate(self.population):
             specimen_fitness = np.dot(specimen, self.profits)
-            print(specimen_fitness)
             specimen_weight = np.dot(specimen, self.weights)
-            print(specimen_weight)
             if specimen_weight > self.knapsack_capacity:
                 specimen_fitness = 0
             self.fitness[i] = specimen_fitness
@@ -32,10 +30,9 @@ class GAKnapsackSolver:
 
 if __name__ == '__main__':
     weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
-    #print(weights, profits, capacity, optimal_selection)
 
     genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
     genetic_alghoritm.create_initial_population(5)
-    genetic_alghoritm.fitness_calc()
+    genetic_alghoritm.compute_fitness()
     print(genetic_alghoritm.fitness)
 
