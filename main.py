@@ -2,6 +2,7 @@ import numpy as np
 from utils import dataReader, arreq_in_list
 import random
 from math import ceil
+
 class GAKnapsackSolver:
     def __init__(self, weights, profits, capacity, optimal_selection) -> None:
         self.weights = np.array(weights)
@@ -30,33 +31,30 @@ class GAKnapsackSolver:
     def tournament_selection(self):
         temp = list(zip(self.population, self.fitness))
         random.shuffle(temp)
+        #print(temp)
         self.population, self.fitness = zip(*temp)
         self.population, self.fitness = list(self.population), list(self.fitness)
         parents = []
-        for _ in range(len(self.population)):
-            for i in range(2):
-                temp_population = []
-                for j in range(ceil(self.population*0.4)):
-                    temp_population.append(random.choice(temp))
-                temp_population.sort(key=lambda x: x[1], reverse=False)
-                parents.append(temp_population[0].ind.copy())
+        for i in range(2):
+            temp_population = []
+            for j in range(ceil(len(self.population)*0.4)):
+                temp_population.append(random.choice(temp))
+            temp_population.sort(key=lambda x: x[1], reverse=False)
+            parents.append(temp_population[0][0].astype(int))
         return parents
 
-
-        
-
-
-
-
-        
-        
+    def one_point_crossover(self, parents):
+        length = len(self.weights)
+        child1 = np.concatenate((parents[0][:length//2],parents[1][length//2:]))
+        child2 = np.concatenate((parents[0][length//2:],parents[1][:length//2]))
+        return [child1, child2]
 
 if __name__ == '__main__':
     weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
     genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
-    genetic_alghoritm.create_initial_population(5)
+    genetic_alghoritm.create_initial_population(20)
     genetic_alghoritm.compute_fitness()
-    genetic_alghoritm.tournament_selection(5)
     parents = genetic_alghoritm.tournament_selection()
     print(parents)
+    print(genetic_alghoritm.one_point_crossover(parents))
 
