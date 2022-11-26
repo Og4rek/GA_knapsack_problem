@@ -11,8 +11,8 @@ class GAKnapsackSolver:
         self.profits = np.array(profits)
         self.knapsack_capacity = capacity 
         self.optimal_selection = optimal_selection
-        self.mutation_rate = 0.03
-        self.reproduction_rate = 0.7
+        self.mutation_rate = 0.05
+        self.reproduction_rate = 0.8
         self.crossover_rate = 0.4
 
     def compute_fitness(self):
@@ -44,20 +44,27 @@ class GAKnapsackSolver:
         self.population, self.fitness = zip(*temp)
         self.population, self.fitness = list(self.population), list(self.fitness)
         parents = []
-        for i in range(2):
-            temp_population = []
-            for j in range(ceil(len(self.population)*0.7)):
-                temp_population.append(random.choice(temp))
-            temp_population.sort(key=lambda x: x[1], reverse=True)
-            #print(temp_population)
-           # print(temp)
-            parents.append(temp_population[0][0].astype(int))
+#        for i in range(2):
+        temp_population = []
+        for j in range(ceil(len(self.population)*0.5)):
+            temp_population.append(random.choice(temp))
+        temp_population.sort(key=lambda x: x[1], reverse=True)
+        #print(temp_population)
+        # print(temp)
+        parents.append(temp_population[0][0].astype(int))
+        parents.append(temp_population[1][0].astype(int))
         return parents
 
     def one_point_crossover(self, parents):
         length = len(self.weights)
         child1 = np.concatenate((parents[0][:length//2],parents[1][length//2:]))
         child2 = np.concatenate((parents[0][length//2:],parents[1][:length//2]))
+        return [child1, child2]
+
+    def two_point_crossover(self, parents):
+        length = len(self.weights)
+        child1 = np.concatenate((parents[0][:length//3],parents[1][length//3:(length//3)*2],parents[0][(length//3)*2:]))
+        child2 = np.concatenate((parents[1][:length//3],parents[0][length//3:(length//3)*2],parents[1][(length//3)*2:]))
         return [child1, child2]
 
     def mutate(self, specimens):
@@ -73,25 +80,34 @@ class GAKnapsackSolver:
         while len(next_gen) != len(self.population):
             children = list()
             parents = self.tournament_selection()
-            if random.random() < self.reproduction_rate:
-                children = parents
-            else:
+            if self.reproduction_rate > self.crossover_rate:
                 if random.random() < self.crossover_rate:
-                    children = self.one_point_crossover(parents)
-                
+                    children = self.two_point_crossover(parents)
+                else:
+                    if random.random() < self.reproduction_rate:
+                        children = parents
                 if random.random() < self.mutation_rate:
-                    children = self.mutate(children)
+                        children = self.mutate(children)
+            else:
+                if random.random() < self.reproduction_rate:
+                    children = parents
+                else:
+                    if random.random() < self.crossover_rate:
+                        children = self.two_point_crossover(parents)
+                    
+                    if random.random() < self.mutation_rate:
+                        children = self.mutate(children)
 
             if children:
                 next_gen.extend(children)
         return next_gen
     
     def solve(self):
-        self.create_initial_population(50)
+        self.create_initial_population(20)
         self.compute_fitness()
         average_fitness = []
         generations = []
-        for generation in range(500):
+        for generation in range(1000):
             average_fitness.append(mean(self.get_fitness()))
             self.population = self.create_generation()
             generations.append(generation)
