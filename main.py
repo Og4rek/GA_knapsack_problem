@@ -81,28 +81,29 @@ class GAKnapsackSolver:
         return [child1, child2]
 
     def mutate(self, specimens):
+        id_specimens = np.random.randint(0, 2)
+        gene = np.random.randint(0, len(specimens[id_specimens]))
+        specimens[id_specimens][gene] = np.abs(specimens[id_specimens][gene] - 1)
         for id, specimen in enumerate(specimens):
             for i in range(len(specimen)):
                 if random.random() < self.mutation_rate:
-                    if specimen[i] == 0:
-                        specimen[i] = 1
-                    else:
-                        specimen[i] = 0
+                    specimen[i] = np.abs(specimen[i] - 1)
             specimens[id] = specimen
-            return specimens
+        return specimens
 
     def create_generation(self):
         next_gen = []
         children = list()
-        parents_list = np.array(self.tournament_selection()).reshape((25, 2, 10))
+        parents_list = np.array(self.tournament_selection()).reshape((50, 2, 24))
         for parents in parents_list:
             children = parents
             if random.random() < self.reproduction_rate:
                 children = parents
             else:
                 if random.random() < self.crossover_rate:
-                    children = self.one_point_crossover(parents)
-                
+                    #children = self.one_point_crossover(parents)
+                    children = self.two_point_crossover(parents)
+
                 if random.random() < self.mutation_rate:
                     children = self.mutate(children)
 
@@ -111,10 +112,10 @@ class GAKnapsackSolver:
         return next_gen
     
     def solve(self):
-        self.create_initial_population(50)
+        self.create_initial_population(100)
         average_fitness = []
         generations = []
-        for generation in range(1000):
+        for generation in range(10000):
             print(f"...{generation}...")
             self.compute_fitness()
             average_fitness.append(mean(self.get_fitness()))
@@ -135,7 +136,7 @@ class GAKnapsackSolver:
 
 
 if __name__ == '__main__':
-    weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
+    weights, profits, capacity, optimal_selection = dataReader.read_data("p08")
     genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
     best = genetic_alghoritm.solve()
 
