@@ -116,13 +116,18 @@ class GAKnapsackSolver:
         for generation in range(1000):
             print(f"...{generation}...")
             self.compute_fitness()
-            max_fitness.append(np.max(self.fitness))
-            average_fitness.append(np.mean(self.fitness))
-            self.population = self.create_generation()
-            generations.append(generation)
             if arreq_in_list(optimal_selection, self.population):
                 print("Optimal solution reached!")
+                max_fitness.append(np.max(self.fitness))
+                print(np.max(self.fitness))
+                average_fitness.append(np.mean(self.fitness))
+                generations.append(generation)
                 break
+            max_fitness.append(np.max(self.fitness))
+            average_fitness.append(np.mean(self.fitness))
+            generations.append(generation)
+            self.population = self.create_generation()
+    
 
         self.compute_fitness()
         best_speciman = self.population[np.argmax(self.fitness)]
@@ -130,6 +135,7 @@ class GAKnapsackSolver:
         
         plt.plot(generations, average_fitness)
         plt.plot(generations, max_fitness)
+        plt.plot(generations[-1], max_fitness[-1], 'r.')
         plt.legend(["Average fitness value", "Maximum fitness value"])
         plt.title(f"Fitness coefficent throughout {len(generations)} generations of population")
         plt.xlabel("generation")
