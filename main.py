@@ -54,6 +54,21 @@ class GAKnapsackSolver:
             parents.append(temp_population[0][0].astype(int))
         return parents
 
+    def tournament_selection(self):
+        self.compute_fitness()
+        temp = list(zip(self.population, self.fitness))
+        random.shuffle(temp)
+        #print(temp)
+        self.population, self.fitness = zip(*temp)
+        self.population, self.fitness = list(self.population), list(self.fitness)
+        parents = []
+
+        population_p1, population_p2 = self.population[:len(self.population)], self.population[len(self.population):]
+        fitness_p1, fitness_p2 = self.fitness[:len(self.fitness)], self.fitness[len(self.fitness):]
+        parents.append(population_p1[np.argmax(fitness_p1)])
+        parents.append(population_p2[np.argmax(fitness_p2)])
+        return parents
+
     def one_point_crossover(self, parents):
         length = len(self.weights)
         child1 = np.concatenate((parents[0][:length//2],parents[1][length//2:]))
