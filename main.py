@@ -63,8 +63,8 @@ class GAKnapsackSolver:
         self.population, self.fitness = list(self.population), list(self.fitness)
         parents = []
 
-        population_p1, population_p2 = self.population[:len(self.population)], self.population[len(self.population):]
-        fitness_p1, fitness_p2 = self.fitness[:len(self.fitness)], self.fitness[len(self.fitness):]
+        population_p1, population_p2 = self.population[:len(self.population)//2], self.population[len(self.population)//2:]
+        fitness_p1, fitness_p2 = self.fitness[:len(self.fitness)//2], self.fitness[len(self.fitness)//2:]
         parents.append(population_p1[np.argmax(fitness_p1)])
         parents.append(population_p2[np.argmax(fitness_p2)])
         return parents
