@@ -24,9 +24,6 @@ class GAKnapsackSolver:
                 specimen_fitness = 0
             self.fitness[i] = specimen_fitness
     
-    def get_fitness(self):
-        return self.fitness
-
 
     def create_initial_population(self, population_size):
         self.population = list()
@@ -92,9 +89,9 @@ class GAKnapsackSolver:
         return specimens
 
     def create_generation(self):
-        next_gen = []
+        next_gen = list()
         children = list()
-        parents_list = np.array(self.tournament_selection()).reshape((50, 2, 24))
+        parents_list = np.array(self.tournament_selection()).reshape((int(len(self.population)/2), 2, len(self.weights)))
         for parents in parents_list:
             children = parents
             if random.random() < self.reproduction_rate:
@@ -112,13 +109,15 @@ class GAKnapsackSolver:
         return next_gen
     
     def solve(self):
-        self.create_initial_population(100)
+        self.create_initial_population(50)
         average_fitness = []
+        max_fitness = []
         generations = []
-        for generation in range(10000):
+        for generation in range(1000):
             print(f"...{generation}...")
             self.compute_fitness()
-            average_fitness.append(mean(self.get_fitness()))
+            max_fitness.append(np.max(self.fitness))
+            average_fitness.append(np.mean(self.fitness))
             self.population = self.create_generation()
             generations.append(generation)
             if arreq_in_list(optimal_selection, self.population):
@@ -130,13 +129,17 @@ class GAKnapsackSolver:
         print(f"Best specimen: {self.population[np.argmax(self.fitness)]}, Value: {np.max(self.fitness)}")
         
         plt.plot(generations, average_fitness)
+        plt.plot(generations, max_fitness)
+        plt.legend(["Average fitness value", "Maximum fitness value"])
+        plt.title(f"Fitness coefficent throughout {len(generations)} generations of population")
+        plt.xlabel("generation")
         plt.show()
         
         return best_speciman
 
 
 if __name__ == '__main__':
-    weights, profits, capacity, optimal_selection = dataReader.read_data("p08")
+    weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
     genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
     best = genetic_alghoritm.solve()
 
