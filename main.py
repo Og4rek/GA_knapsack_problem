@@ -5,8 +5,16 @@ from math import ceil
 from statistics import mean
 import matplotlib.pyplot as plt
 
+class itemGenerator:
+    @staticmethod
+    def generate_items(N):
+        weights = list(np.random.randint(1,11,N))
+        profits = list(np.random.randint(1,11,N))
+
+        return weights, profits
+
 class GAKnapsackSolver:
-    def __init__(self, weights, profits, capacity, optimal_selection) -> None:
+    def __init__(self, weights, profits, capacity, optimal_selection = []) -> None:
         self.weights = np.array(weights)
         self.profits = np.array(profits)
         self.knapsack_capacity = capacity 
@@ -109,20 +117,20 @@ class GAKnapsackSolver:
         return next_gen
     
     def solve(self):
-        self.create_initial_population(50)
+        self.create_initial_population(100)
         average_fitness = []
         max_fitness = []
         generations = []
-        for generation in range(1000):
+        for generation in range(100):
             print(f"...{generation}...")
             self.compute_fitness()
-            if arreq_in_list(optimal_selection, self.population):
-                print("Optimal solution reached!")
-                max_fitness.append(np.max(self.fitness))
-                print(np.max(self.fitness))
-                average_fitness.append(np.mean(self.fitness))
-                generations.append(generation)
-                break
+            # if arreq_in_list(optimal_selection, self.population):
+            #     print("Optimal solution reached!")
+            #     max_fitness.append(np.max(self.fitness))
+            #     print(np.max(self.fitness))
+            #     average_fitness.append(np.mean(self.fitness))
+            #     generations.append(generation)
+            #     break
             max_fitness.append(np.max(self.fitness))
             average_fitness.append(np.mean(self.fitness))
             generations.append(generation)
@@ -136,7 +144,7 @@ class GAKnapsackSolver:
         plt.plot(generations, average_fitness)
         plt.plot(generations, max_fitness)
         plt.plot(generations[-1], max_fitness[-1], 'r.')
-        plt.legend(["Average fitness value", "Maximum fitness value"])
+        plt.legend(["Average fitness value", "Maximum fitness value", "Maximum possible fitness"])
         plt.title(f"Fitness coefficent throughout {len(generations)} generations of population")
         plt.xlabel("generation")
         plt.show()
@@ -145,7 +153,39 @@ class GAKnapsackSolver:
 
 
 if __name__ == '__main__':
-    weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
-    genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
+    capacity_gen = 70
+    weights_gen, profits_gen = itemGenerator.generate_items(50)
+
+    weights, profits, capacity, optimal_selection = dataReader.read_data("p02")
+    genetic_alghoritm = GAKnapsackSolver(weights_gen, profits_gen, capacity_gen)
     best = genetic_alghoritm.solve()
 
+
+
+    # weights, profits, capacity, optimal_selection = dataReader.read_data("p01")
+    # genetic_alghoritm_1 = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
+    # weights, profits, capacity, optimal_selection = dataReader.read_data("p02")
+    # genetic_alghoritm_2 = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
+    # weights, profits, capacity, optimal_selection = dataReader.read_data("p05")
+    # genetic_alghoritm_3 = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
+    # weights, profits, capacity, optimal_selection = dataReader.read_data("p08")
+    # genetic_alghoritm_4 = GAKnapsackSolver(weights, profits, capacity, optimal_selection)
+
+    # best_speciman_1, generations_1, max_fitness_1, average_fitness_1 = genetic_alghoritm_1.solve(50)
+    # best_speciman_2, generations_2, max_fitness_2, average_fitness_2 = genetic_alghoritm_2.solve(6)
+    # best_speciman_3, generations_3, max_fitness_3, average_fitness_3 = genetic_alghoritm_3.solve(50)
+    # best_speciman_4, generations_4, max_fitness_4, average_fitness_4 = genetic_alghoritm_4.solve(50)
+    # fig, axs = plt.subplots(2, 2)
+    # fig.suptitle("Fitness coefficent throughout generations of population")
+    # axs[0, 0].plot(generations_1, average_fitness_1)
+    # axs[0, 0].plot(generations_1, max_fitness_1)
+    # axs[0, 0].set_title(f'[p01] {len(generations_1)} generations')
+    # axs[0, 1].plot(generations_2, average_fitness_2)
+    # axs[0, 1].plot(generations_2, max_fitness_2)
+    # axs[0, 1].set_title(f'[p02] {len(generations_2)} generations')
+    # axs[1, 0].plot(generations_3, average_fitness_3)
+    # axs[1, 0].plot(generations_3, max_fitness_3)
+    # axs[1, 0].set_title(f'[p05] {len(generations_2)} generations')
+    # axs[1, 1].plot(generations_4, average_fitness_4)
+    # axs[1, 1].plot(generations_4, max_fitness_4)
+    # axs[1, 1].set_title(f'[p05] {len(generations_4)} generations')
