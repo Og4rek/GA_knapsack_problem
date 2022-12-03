@@ -85,10 +85,12 @@ class GAKnapsackSolver:
 
     def two_point_crossover(self, parents):
         length = len(self.weights)
+        p1 = np.random.randint(1, length - 2)
+        p2 = np.random.randint(p1+1, length - 1)
         child1 = np.concatenate(
-            (parents[0][:length // 3], parents[1][length // 3:(length // 3) * 2], parents[0][(length // 3) * 2:]))
+            (parents[0][:p1], parents[1][p1:p2], parents[0][p2:]))
         child2 = np.concatenate(
-            (parents[1][:length // 3], parents[0][length // 3:(length // 3) * 2], parents[1][(length // 3) * 2:]))
+            (parents[1][:p1], parents[0][p1:p2], parents[1][p2:]))
         return [child1, child2]
 
     def mutate(self, specimens):
@@ -105,6 +107,7 @@ class GAKnapsackSolver:
     def create_generation(self):
         next_gen = list()
         children = list()
+        random.shuffle(self.tournament_selection())
         parents_list = np.array(self.tournament_selection()).reshape(
             (int(len(self.population) / 2), 2, len(self.weights)))
         for parents in parents_list:
