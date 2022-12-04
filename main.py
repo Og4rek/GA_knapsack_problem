@@ -165,7 +165,7 @@ class GAKnapsackSolver:
 
 
 if __name__ == '__main__':
-    capacity_gen = [200, 300, 400, 500, 600]
+    capacity_gen = [i*50 for i in range(3, 20)]
     weights_gen_1, profits_gen_1 = itemGenerator.generate_items(100)
     weights_gen_2, profits_gen_2 = itemGenerator.generate_items(250)
     weights_gen_3, profits_gen_3 = itemGenerator.generate_items(500)
@@ -179,7 +179,6 @@ if __name__ == '__main__':
         best_3 = genetic_alghoritm_3.solve()
 
     filenames = [f'p{i:0>2}' for i in range(1, 9)]
-
     for i, file in enumerate(filenames):
         weights, profits, capacity, optimal_selection = dataReader.read_data(file)
         genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, file)
