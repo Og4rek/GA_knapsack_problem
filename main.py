@@ -152,7 +152,8 @@ class GAKnapsackSolver:
 
         plt.plot(generations, average_fitness)
         plt.plot(generations, max_fitness)
-        plt.plot(generations[-1], max_fitness[-1], 'r.')
+        if 'p' in self.name:
+            plt.plot(generations[-1], max_fitness[-1], 'r.')
         plt.legend(["Average fitness value", "Maximum fitness value", "Maximum possible fitness"])
         plt.title(f"Fitness coefficent throughout {len(generations)} generations of population")
         plt.xlabel("generation")
