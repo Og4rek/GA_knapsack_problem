@@ -27,8 +27,11 @@ class GAKnapsackSolver:
         self.reproduction_rate = 0.7
         self.crossover_rate = 0.4
         self.name = name
+        self.specimen_weight = None
+        self.weight_max = None
 
     def compute_fitness(self):
+        wagi = []
         self.fitness = np.empty(len(self.population))
         for i, specimen in enumerate(self.population):
             specimen_fitness = np.dot(specimen, self.profits)
@@ -36,6 +39,9 @@ class GAKnapsackSolver:
             if specimen_weight > self.knapsack_capacity:
                 specimen_fitness = 0
             self.fitness[i] = specimen_fitness
+            wagi.append(specimen_weight)
+        self.weight_mean = np.average(wagi)
+        self.weight_max = wagi[np.argmax(self.fitness)]
 
     def create_initial_population(self, population_size):
         self.population = list()
@@ -131,19 +137,25 @@ class GAKnapsackSolver:
         average_fitness = []
         max_fitness = []
         generations = []
-        for generation in range(1000):
+        weights_mean = []
+        weights_max = []
+        for generation in range(10000):
             # print(f"...{generation}...")
             self.compute_fitness()
             if 'p' in self.name and arreq_in_list(optimal_selection, self.population):
                 # print("Optimal solution reached!")
                 max_fitness.append(np.max(self.fitness))
                 # print(np.max(self.fitness))
+                weights_mean.append(self.weight_mean)
+                weights_max.append(self.weight_max)
                 average_fitness.append(np.mean(self.fitness))
                 generations.append(generation)
                 break
             max_fitness.append(np.max(self.fitness))
             average_fitness.append(np.mean(self.fitness))
             generations.append(generation)
+            weights_mean.append(self.weight_mean)
+            weights_max.append(self.weight_max)
             self.population = self.create_generation()
 
         self.compute_fitness()
@@ -159,21 +171,36 @@ class GAKnapsackSolver:
         plt.xlabel("generation")
         plt.savefig(os.path.join("results", self.name))
         plt.clf()
+
+        plt.plot(generations, weights_mean)
+        plt.plot(generations, weights_max)
+        plt.plot(generations, np.ones(len(generations)) * self.knapsack_capacity, '--', color='r')
+        plt.legend(["Average weights value", "Weights value of maximum fitness value", "Maximum possible weight"])
+        plt.title(f"Weights coefficent throughout {len(generations)} generations of population")
+        plt.xlabel("generation")
+        plt.savefig(os.path.join("results", self.name+"_weights"))
+        plt.clf()
+
         # plt.show()
 
         return best_speciman
 
 
 if __name__ == '__main__':
-    capacity_gen = [i*50 for i in range(3, 20)]
+    # capacity_gen = [i*50 for i in range(4, 6)]
+    capacity_gen_1 = [200, 250]
+    capacity_gen_2 = [600, 800]
+    capacity_gen_3 = [1200, 1600]
     weights_gen_1, profits_gen_1 = itemGenerator.generate_items(100)
     weights_gen_2, profits_gen_2 = itemGenerator.generate_items(250)
     weights_gen_3, profits_gen_3 = itemGenerator.generate_items(500)
 
-    for capacity in capacity_gen:
-        genetic_alghoritm_1 = GAKnapsackSolver(weights_gen_1, profits_gen_1, capacity, f'g_I100_C{capacity}')
-        genetic_alghoritm_2 = GAKnapsackSolver(weights_gen_2, profits_gen_2, capacity * 3, f'g_I250_C{capacity * 3}')
-        genetic_alghoritm_3 = GAKnapsackSolver(weights_gen_3, profits_gen_3, capacity * 6, f'g_I500_C{capacity * 6}')
+    version = f'v10000'
+
+    for i, capacity in enumerate(capacity_gen_1):
+        genetic_alghoritm_1 = GAKnapsackSolver(weights_gen_1, profits_gen_1, capacity_gen_1[i], f'{version}_g_I100_C{capacity_gen_1[i]}')
+        genetic_alghoritm_2 = GAKnapsackSolver(weights_gen_2, profits_gen_2, capacity_gen_2[i], f'{version}_g_I250_C{capacity_gen_2[i]}')
+        genetic_alghoritm_3 = GAKnapsackSolver(weights_gen_3, profits_gen_3, capacity_gen_3[i], f'{version}_g_I500_C{capacity_gen_3[i]}')
         best_1 = genetic_alghoritm_1.solve()
         best_2 = genetic_alghoritm_2.solve()
         best_3 = genetic_alghoritm_3.solve()
@@ -181,5 +208,5 @@ if __name__ == '__main__':
     filenames = [f'p{i:0>2}' for i in range(1, 9)]
     for i, file in enumerate(filenames):
         weights, profits, capacity, optimal_selection = dataReader.read_data(file)
-        genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, file)
+        genetic_alghoritm = GAKnapsackSolver(weights, profits, capacity, version+'_'+file)
         best = genetic_alghoritm.solve()
