@@ -67,19 +67,6 @@ cd GA_knapsack_problem
 python main.py
 ```
 
-# Create a Conda environment
-conda create --name knapsack_env python=3.8
-
-# Activate the Conda environment
-conda activate knapsack_env
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Execute the genetic algorithm script
-python main.py
-
-
 ## License
 
 This project is licensed under the MIT License.
